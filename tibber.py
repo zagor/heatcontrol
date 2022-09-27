@@ -2,7 +2,8 @@ from typing import Dict, Optional
 import sched
 import requests
 import logging
-from datetime import datetime, time, timedelta
+import time
+from datetime import datetime, timedelta
 from threading import Thread, Lock
 
 import config
@@ -34,7 +35,7 @@ def _decode_prices(data):
 
     # verify we got todays prices and not yesterdays
     # (due to clock diff between client and server, we could be getting old/new data)
-    last_midnight = datetime.combine(datetime.now().date(), time(0, 0))
+    last_midnight = datetime.now().replace(microsecond=0, second=0, minute=0, hour=0)
     first_hour = datetime.strptime(days['today'][0]['startsAt'], '%Y-%m-%dT%H:%M:%S.%f%z')
     if last_midnight.time() != first_hour.time():
         _log.info(f'We got old data: {first_hour=} != {last_midnight=}')
@@ -78,7 +79,7 @@ def _try_download():
     try:
         _download()
         # all good, run again 00:00:00
-        next_midnight = datetime.combine(datetime.now().date(), time(0, 0)) + timedelta(1)
+        next_midnight = datetime.now().replace(microsecond=0, second=0, minute=0, hour=0) + timedelta(days=1)
         _log.info(f'Scheduling next download at {next_midnight}')
         _scheduler.enterabs(next_midnight.timestamp(), 0, _try_download)
     except RuntimeError:
@@ -91,7 +92,7 @@ def _try_download():
 def _threadloop():
     global _scheduler
     while True:
-        _scheduler = sched.scheduler()
+        _scheduler = sched.scheduler(timefunc=time.time)
         _scheduler.enter(0, 0, _try_download)
         _scheduler.run(blocking=True)
         _log.error('Unexpected exit')

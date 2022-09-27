@@ -62,7 +62,7 @@ def _set_temperature():
 def _threadloop():
     while True:
         global _scheduler
-        _scheduler = scheduler(time.time)
+        _scheduler = scheduler(timefunc=time.time)
         _scheduler.enter(0, 0, _set_temperature)
         _scheduler.run(blocking=True)
         _log.error('Unexpected exit')
