@@ -41,21 +41,20 @@ def _decode_prices(data):
         _log.info(f'We got unexpected data: {first_hour=} != {last_midnight=}')
         raise RuntimeError
 
-    with _price_mutex:
-        grid_fees = config.get('grid_fees')
-        offset = 0
-        for day in days:
-            if day == 'tomorrow':
-                offset += 24
-            for hour in days[day]:
-                # "startsAt": "2022-09-26T00:00:00.000+02:00"
-                t = datetime.strptime(hour['startsAt'], '%Y-%m-%dT%H:%M:%S.%f%z')
-                global _prices
-                _prices[t.hour + offset] = hour['total'] + grid_fees
+    grid_fees = config.get('grid_fees')
+    offset = 0
+    for day in days:
+        if day == 'tomorrow':
+            offset += 24
+        for hour in days[day]:
+            # "startsAt": "2022-09-26T00:00:00.000+02:00"
+            t = datetime.strptime(hour['startsAt'], '%Y-%m-%dT%H:%M:%S.%f%z')
+            global _prices
+            _prices[t.hour + offset] = hour['total'] + grid_fees
 
 
 def _download():
-    if 1:
+    if 0:
         _log.info('Using fake data')
         _decode_prices(_fake_data)
         return
@@ -91,7 +90,8 @@ def _try_download():
     # we get the next-day prices asap, we download every hour.
     _midnight_cleanup()
     try:
-        _download()
+        with _price_mutex:
+            _download()
         # all good, run again next hour
         next_hour = datetime.now().replace(microsecond=0, second=0, minute=0) + timedelta(hours=1)
         _log.info(f'Scheduling next download at {next_hour}')

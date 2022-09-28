@@ -24,7 +24,7 @@ current_fan = 0
 
 def _schedule_next_hour():
     # run 10 seconds past the hour to give some time for the fetcher
-    next_hour = datetime.now().replace(microsecond=0, second=10, minute=0) + timedelta(hours=1)
+    next_hour = datetime.now().replace(microsecond=0, second=1, minute=0) + timedelta(hours=1)
     _log.info(f'Scheduling next temperature setting at {next_hour}')
     _scheduler.enterabs(next_hour.timestamp(), 0, _set_temperature)
 
