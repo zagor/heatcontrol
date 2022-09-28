@@ -31,6 +31,9 @@ def get_current_price() -> Optional[float]:
 
 
 def _decode_prices(data):
+    if data['errors']:
+        _log.error('Failed downloading: ' + data['errors'][0]['message'])
+        raise RuntimeError
     days = data['data']['viewer']['homes'][0]['currentSubscription']['priceInfo']
 
     # verify we got todays prices and not yesterdays
@@ -96,7 +99,7 @@ def _try_download():
         next_hour = datetime.now().replace(microsecond=0, second=0, minute=0) + timedelta(hours=1)
         _log.info(f'Scheduling next download at {next_hour}')
         _scheduler.enterabs(next_hour.timestamp(), 0, _try_download)
-    except RuntimeError:
+    except (RuntimeError, TypeError):
         _log.info('Download failed, trying again in 30s')
         _scheduler.enter(30, 0, _try_download)
 
