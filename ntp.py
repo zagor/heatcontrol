@@ -5,6 +5,7 @@ import logging
 
 _log = logging.getLogger(__name__)
 
+
 def get_time():
     host = "pool.ntp.org"
     port = 123
@@ -33,13 +34,11 @@ def clock_error() -> timedelta:
     diff = abs(ntp_time - local_time)
     direction = 'ahead of' if local_time > ntp_time else 'behind'
     if diff.days > 0:
-        _log.info(f'System clock is {diff.days} day(s) {direction} NTP')
+        _log.error(f'System clock is {diff.days} day(s) {direction} NTP')
     elif diff.seconds > 300:
-        _log.info(f'System clock is {diff.seconds/60} minutes {direction} NTP')
+        _log.warning(f'System clock is {diff.seconds/60} minutes {direction} NTP')
     elif diff.seconds > 0:
         _log.info(f'System clock is {diff.seconds} s {direction} NTP')
-    else:
-        _log.info(f'System clock is less than one second off')
     return diff
 
 

@@ -100,7 +100,8 @@ class MyServer(BaseHTTPRequestHandler):
         self.send_header("Content-type", "text/html")
         self.end_headers()
         self.send("<html><head><title>Heat pump control</title></head>")
-        self.send('<body><h2>Status</h2>')
+        self.send('<body>')
+        self.send('<h2>Status</h2>')
         if tibber.has_prices():
             self.send(f'<p>Current price: {tibber.get_current_price():.2f} kr')
         self.send(f'<p>Current temp setting: {temperature.current_temp} &deg;C')
@@ -121,9 +122,6 @@ class MyServer(BaseHTTPRequestHandler):
         self.send("<html><head><title>Heat pump control</title></head>")
         self.send('<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>')
         self.send('<body>')
-        clock_error = ntp.clock_error()
-        if clock_error.seconds > 300:
-            self.send(f'<p><blink>VARNING:</blink> Systemklockan går {clock_error.seconds} fel!</p>')
         if not tibber.has_prices():
             self.send('<p>No prices :(')
             self.send("</body></html>")
