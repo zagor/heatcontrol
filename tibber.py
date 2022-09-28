@@ -31,8 +31,11 @@ def get_current_price() -> Optional[float]:
 
 
 def _decode_prices(data):
-    if data['errors']:
+    if 'errors' in data:
         _log.error('Failed downloading: ' + data['errors'][0]['message'])
+        raise RuntimeError
+    if 'data' not in data:
+        _log.error('No data section in response')
         raise RuntimeError
     days = data['data']['viewer']['homes'][0]['currentSubscription']['priceInfo']
 
