@@ -23,14 +23,34 @@ current_fan = 0
 
 
 def _schedule_next_hour():
-    next_hour = datetime.now().replace(microsecond=0, second=0, minute=0) + timedelta(hours=1)
+    # run 10 seconds past the hour to give some time for the fetcher
+    next_hour = datetime.now().replace(microsecond=0, second=10, minute=0) + timedelta(hours=1)
     _log.info(f'Scheduling next temperature setting at {next_hour}')
     _scheduler.enterabs(next_hour.timestamp(), 0, _set_temperature)
 
 
+def _send_temperature(temperature, fan, tariff, price):
+    try:
+        global current_temp, current_fan
+        if temperature != current_temp or fan != current_fan:
+            _log.info(f'{tariff} price {price:.02f} kr, setting temperature {temperature}°C and fan {fan}')
+            ir.send(temp=temperature, fan=fan)
+        else:
+            _log.info(f'{tariff} price {price:.02f} kr, keeping temperature {temperature}°C and fan {fan}')
+        current_temp = temperature
+        current_fan = fan
+    except Exception:
+        pass
+
+
 def _set_temperature():
     if not tibber.has_prices():
-        _scheduler.enter(1, 0, _set_temperature)
+        _send_temperature(config.get('normal_temp'),
+                          config.get('normal_fan'),
+                          'Unknown',
+                          0.0)
+        # try again in 10 seconds
+        _scheduler.enter(10, 0, _set_temperature)
         return
     price = tibber.get_current_price()
     if price >= config.get('high_price'):
@@ -45,17 +65,7 @@ def _set_temperature():
         tariff = 'Mid'
         temperature = config.get('normal_temp')
         fan = config.get('normal_fan')
-    try:
-        global current_temp, current_fan
-        if temperature != current_temp or fan != current_fan:
-            _log.info(f'{tariff} price {price:.02f} kr, setting temperature {temperature}°C and fan {fan}')
-            ir.send(temp=temperature, fan=fan)
-        else:
-            _log.info(f'{tariff} price {price:.02f} kr, keeping temperature {temperature}°C and fan {fan}')
-        current_temp = temperature
-        current_fan = fan
-    except Exception:
-        pass
+    _send_temperature(temperature, fan, tariff, price)
     _schedule_next_hour()
 
 
