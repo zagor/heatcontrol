@@ -22,7 +22,7 @@ startbit_mark: int = 0
 interframe_space: int = 0
 premsg_space: int = 0
 
-_pi: pigpio.Pi
+_pi: pigpio.pi
 _log = logging.getLogger(__name__)
 
 

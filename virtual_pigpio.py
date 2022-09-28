@@ -1,7 +1,7 @@
 OUTPUT = True
 
 
-class Pi:
+class pi:
     def connected(self) -> bool:
         return True
 
@@ -25,10 +25,6 @@ class Pi:
 
     def stop(self):
         pass
-
-
-def pi() -> Pi:
-    return Pi()
 
 
 def pulse(on, off, delay):
