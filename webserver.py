@@ -139,7 +139,7 @@ class MyServer(BaseHTTPRequestHandler):
 
 
 def _threadloop():
-    hostname = "localhost"
+    hostname = "0.0.0.0"
     server_port = config.get('web_port')
     server = HTTPServer((hostname, server_port), MyServer)
     _log.info(f'Started http://{hostname}:{server_port}')
