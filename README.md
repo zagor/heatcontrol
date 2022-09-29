@@ -1,6 +1,8 @@
 # heatcontrol
 Control your heating based on your hourly electricity rate
 
+![prices](https://user-images.githubusercontent.com/229360/192975518-708ffd28-0fb1-489e-9463-216c73f2dfd0.png)
+
 ## The concept
 Heatcontrol changes the settings of your HVAC system every hour based on the
 momentary price of electricity.
