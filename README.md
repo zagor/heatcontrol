@@ -7,15 +7,10 @@ Control your heating based on your hourly electricity rate
 Heatcontrol changes the settings of your HVAC system every hour based on the
 momentary price of electricity.
 
-In most homes, you can turn off the heat for an hour or a few without adverse side effects.
-This is due to buildings having _thermal mass_, which provides _thermal inertia_,
-i.e resistance against sudden temperature changes.
-
-You can think of your house like a heat battery.
-It constantly drains heat to the outside, so you constantly add heat to keep a certain temperature.
-
-But you don't have to add heat at the same rate as the house drain it.
-Thanks to the thermal inertia, you can "charge up" the house a little extra during cheap hours
+You can think of your house as a "heat battery". 
+It constantly drains heat to the outside, so you constantly have to add heat to stay comfortable.
+But you don't have to add heat at the exact same rate as the house drain it.
+Thanks to _thermal inertia_, you can "charge up" the house a little extra during cheap hours
 and let it drain a little extra during expensive hours. 
 This results in a little more variation in indoor temperatures (both up and down) but can produce
 significant cost savings if there are big swings in your hourly electricity price.
@@ -23,7 +18,7 @@ significant cost savings if there are big swings in your hourly electricity pric
 ## How to use it
 You configure two price limits: A high limit and a low limit.
 This defines three price intervals: Low, mid and high.
-For each price interval, you configure the heater setting to use. 
+For each price interval, you configure the HVAC settings to use. 
 
 Point your browser to port 8080 for a configuration interface and to /prices for price display.
 
