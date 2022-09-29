@@ -1,7 +1,8 @@
 import logging
 import time
 import signal
-from typing import Optional, Any
+
+import ir
 
 try:
     import pigpio  # apt install python3-pigpio
@@ -10,7 +11,7 @@ except ModuleNotFoundError:
 
 import config
 
-_default_config = {'ir_gpio_pin': '14',
+_default_config = {'ir_gpio_pin': 14,
                    'heater_model': 'toshiba'}
 
 # frames
@@ -35,7 +36,8 @@ def reverse_frame(frame):
     for i in range(len(frame)):
         frame[i] = _reverse_byte(frame[i])
 
-def carrier(gpio, frequency, micros):
+
+def carrier(gpio: int, frequency, micros):
     """
     Generate carrier square wave.
     """
@@ -107,8 +109,8 @@ def _setup_waves(gpio):
     global _pi
     _pi = pigpio.pi()
     if not _pi.connected:
-        print("pigpio not connected")
-        exit(0)
+        _log.error("pigpio not connected")
+        return
 
     _pi.set_mode(gpio, pigpio.OUTPUT)
 
@@ -145,10 +147,11 @@ def _cleanup():
         _pi.stop()
 
 
-def print_frame(frame):
+def print_frame(frame: str, prefix=''):
+    buf = prefix
     for byte in frame:
-        print(f'{byte:02x} ', end='')
-    print()
+        buf += f'{byte:02x} '
+    _log.info(buf)
 
 
 def send(temperature, fan_speed):
@@ -157,7 +160,7 @@ def send(temperature, fan_speed):
 
 def init():
     config.put_defaults(_default_config)
-    ir_pin = config.get('ir_gpio_pin')
+    ir_pin = int(config.get('ir_gpio_pin'))
     signal.signal(signal.SIGTERM, _cleanup)
     _setup_waves(ir_pin)
 

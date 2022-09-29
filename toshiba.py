@@ -28,9 +28,7 @@ def send(temp, fan):
     frame[6] = fan << 5 | mode
 
     ir.add_crc(frame)
-    ir.print_frame(frame)
     ir.reverse_frame(frame)
-    ir.print_frame(frame)
     chain = [ir.msgstart_mark, ir.msgstart_space]
     ir.add_frame_to_chain(frame, chain)
     ir.add_frame_to_chain(frame, chain)

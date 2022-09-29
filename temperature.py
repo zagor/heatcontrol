@@ -34,7 +34,7 @@ def _send_temperature(temperature, fan, tariff, price):
         global current_temp, current_fan
         if temperature != current_temp or fan != current_fan:
             _log.info(f'{tariff} price {price:.02f} kr, setting temperature {temperature}°C and fan {fan}')
-            ir.send(temp=temperature, fan=fan)
+            ir.send(temperature=temperature, fan_speed=fan)
         else:
             _log.info(f'{tariff} price {price:.02f} kr, keeping temperature {temperature}°C and fan {fan}')
         current_temp = temperature
@@ -81,6 +81,7 @@ def _threadloop():
 
 def init():
     config.put_defaults(_default_config)
+    ir.init()
     t = Thread(target=_threadloop, name='Temperature')
     t.daemon = True
     t.start()
